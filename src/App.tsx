@@ -114,6 +114,15 @@ export default function App() {
     }, 1500)
   }, [])
 
+  /** 判断是否为网络不可达（需内网），用于提示友好文案 */
+  const isNetworkError = useCallback((e: unknown) => {
+    const msg = (e instanceof Error ? e.message : String(e)).toLowerCase()
+    return (
+      /failed to fetch|networkerror|load failed|network request failed/i.test(msg) ||
+      /err_network|err_connection|cors|timeout|无法访问|连接|refused/i.test(msg)
+    )
+  }, [])
+
   const ids = useMemo(() => parseIdsFromInput(idsInput), [idsInput])
 
   const idsMatchLastLoad = useMemo(() => {
@@ -135,11 +144,11 @@ export default function App() {
       setRemovedIds(new Set())
     } catch (e) {
       setItems([])
-      setError(e instanceof Error ? e.message : String(e))
+      setError(isNetworkError(e) ? '需连公司内网才能打开哦' : (e instanceof Error ? e.message : String(e)))
     } finally {
       setLoading(false)
     }
-  }, [ids, platform])
+  }, [ids, platform, isNetworkError])
 
   useEffect(() => {
     if (isFirstPlatformRef.current) {
@@ -167,7 +176,7 @@ export default function App() {
           setLastLoadedIds([...fromUrl])
           setRemovedIds(new Set())
         } catch (e) {
-          setError(e instanceof Error ? e.message : String(e))
+          setError(isNetworkError(e) ? '需连公司内网才能打开哦' : (e instanceof Error ? e.message : String(e)))
         } finally {
           setLoading(false)
         }
@@ -331,7 +340,7 @@ export default function App() {
 
         {error && (
           <div style={styles.error}>
-            无法加载当前ID内容，请检查平台或ID
+            {error}
           </div>
         )}
       </header>

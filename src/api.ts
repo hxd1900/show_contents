@@ -592,7 +592,10 @@ function parseHtmlForItems(html: string, requestedIds: string[]): NormalizedItem
   return out
 }
 
-const API_PREFIX = import.meta.env.DEV ? '/__api' : ''
+/** 开发时走 Vite 代理；生产时若设置了 VITE_API_BASE 则请求该基地址（部署到 Netlify/Vercel 时填内网 API 根地址，同事连内网打开页面即可） */
+const API_PREFIX = import.meta.env.DEV
+  ? '/__api'
+  : (import.meta.env.VITE_API_BASE as string | undefined)?.trim().replace(/\/$/, '') || ''
 
 /** 稿定 = 模板接口；花瓣 = 花瓣文件接口 */
 export type Platform = 'gaoding' | 'huaban'

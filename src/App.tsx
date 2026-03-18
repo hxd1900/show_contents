@@ -114,7 +114,7 @@ export default function App() {
     }, 1500)
   }, [])
 
-  /** 判断是否为网络不可达（需内网），用于提示友好文案 */
+  /** 判断是否为网络/跨域类错误，用于提示友好文案 */
   const isNetworkError = useCallback((e: unknown) => {
     const msg = (e instanceof Error ? e.message : String(e)).toLowerCase()
     return (
@@ -144,7 +144,11 @@ export default function App() {
       setRemovedIds(new Set())
     } catch (e) {
       setItems([])
-      setError(isNetworkError(e) ? '需连公司内网才能打开哦' : (e instanceof Error ? e.message : String(e)))
+      setError(
+        isNetworkError(e)
+          ? '请求失败。若原网站能打开，多半是接口未允许当前页面域名跨域（CORS），请将本应用部署到与接口同域，或联系后端为该站点开放 CORS；否则请确认已连公司内网。'
+          : (e instanceof Error ? e.message : String(e)),
+      )
     } finally {
       setLoading(false)
     }
@@ -176,7 +180,11 @@ export default function App() {
           setLastLoadedIds([...fromUrl])
           setRemovedIds(new Set())
         } catch (e) {
-          setError(isNetworkError(e) ? '需连公司内网才能打开哦' : (e instanceof Error ? e.message : String(e)))
+          setError(
+            isNetworkError(e)
+              ? '请求失败。若原网站能打开，多半是接口未允许当前页面域名跨域（CORS），请将本应用部署到与接口同域，或联系后端为该站点开放 CORS；否则请确认已连公司内网。'
+              : (e instanceof Error ? e.message : String(e)),
+          )
         } finally {
           setLoading(false)
         }

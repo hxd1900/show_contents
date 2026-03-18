@@ -25,6 +25,8 @@
    - Value：`https://search-aladdin-lamp.hlgdata.com`  
    - 保存后重新 Deploy。
 
-若内网接口不允许跨域请求来自 Netlify/Vercel 的域名，需在接口所在服务配置 CORS 放行该域名，或将本应用部署到与接口同域。
+若**原网站能打开**但本应用仍提示请求失败，多半是 **CORS 跨域**：内网接口未允许来自 Netlify/Vercel 域名的请求。可选方案：  
+- 将本应用部署到与接口**同域**（如公司内网同一域名下）；或  
+- 联系后端在接口上为 `https://show-contents.netlify.app` 等域名配置 CORS 放行。
 
 Private / 内部使用。

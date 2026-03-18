@@ -11,20 +11,5 @@
 - **主题**：深色模式、浅色模式
 - **其他**：返回顶部、批量选择/删除、生成分享链接；
 
-## 部署到 Netlify / Vercel 后接口 404 或「返回 HTML」
-
-页面部署在公网，但接口在公司内网。需在 **构建时** 注入内网 API 根地址，且**同事打开链接时须连公司内网 / VPN**，浏览器才能请求到接口。
-
-1. **Netlify**：Site settings → Environment variables → Add variable  
-   - Key：`VITE_API_BASE`  
-   - Value：`https://search-aladdin-lamp.hlgdata.com`（或你们实际的内网 API 根地址）  
-   - 保存后重新 Deploy 一次（Build 会带上该变量）。
-
-2. **Vercel**：Project → Settings → Environment Variables  
-   - Name：`VITE_API_BASE`  
-   - Value：`https://search-aladdin-lamp.hlgdata.com`  
-   - 保存后重新 Deploy。
-
-若内网接口不允许跨域请求来自 Netlify/Vercel 的域名，需在接口所在服务配置 CORS 放行该域名，或将本应用部署到与接口同域。
 
 Private / 内部使用。

@@ -592,10 +592,11 @@ function parseHtmlForItems(html: string, requestedIds: string[]): NormalizedItem
   return out
 }
 
-/** 开发时走 Vite 代理；生产时若设置了 VITE_API_BASE 则请求该基地址（部署到 Netlify/Vercel 时填内网 API 根地址，同事连内网打开页面即可） */
+/** 开发时走 Vite 代理；生产时请求该基地址（可与 vite proxy target 一致；部署到 Netlify/Vercel 时也可用环境变量 VITE_API_BASE 覆盖） */
 const API_PREFIX = import.meta.env.DEV
   ? '/__api'
-  : (import.meta.env.VITE_API_BASE as string | undefined)?.trim().replace(/\/$/, '') || ''
+  : ((import.meta.env.VITE_API_BASE as string | undefined)?.trim().replace(/\/$/, '') ||
+      'https://search-aladdin-lamp.hlgdata.com')
 
 /** 稿定 = 模板接口；花瓣 = 花瓣文件接口 */
 export type Platform = 'gaoding' | 'huaban'
@@ -700,9 +701,11 @@ export async function fetchTemplatesByIds(
         /* */
       }
     }
-    throw new Error(
-      '接口返回的是网页 HTML，且未能从页面中解析出模板列表。请在原版预览页打开开发者工具 → Network，找到返回 JSON 的 XHR，把 URL 配到 .env 的 VITE_JSON_API（见 README）。',
-    )
+    const hint =
+      url.startsWith('http') && !url.includes(window.location.host)
+        ? `当前请求的 URL 是：${url}。若该地址在原版页中返回的是 HTML 而非 JSON，请在原版预览页 F12 → Network → 找到返回 JSON 的 XHR，把其完整 URL 配到环境变量 VITE_JSON_API，然后重新部署。`
+        : `当前请求的 URL 是：${url}。部署到 Netlify/Vercel 时请在站点环境变量中设置 VITE_API_BASE 为内网 API 根地址（如 https://search-aladdin-lamp.hlgdata.com），保存后执行「Clear cache and deploy site」再试。`
+    throw new Error(`接口返回的是网页 HTML，且未能从页面中解析出模板列表。${hint}`)
   }
 
   try {
